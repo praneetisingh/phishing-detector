@@ -25,8 +25,7 @@ from datetime import datetime
 # ──────────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────────
-
-API_BASE = "http://localhost:8000"
+API_BASE = "https://phishing-detector-r1o9.onrender.com"
 PAGE_TITLE = "PhishShield — AI Email Security"
 
 st.set_page_config(
