@@ -1,7 +1,7 @@
 fastapi==0.115.0
 uvicorn[standard]==0.34.0
 python-multipart==0.0.20
-pydantic==2.0.0
+pydantic==2.9.2
 lxml==5.3.0
 beautifulsoup4==4.14.3
 certifi==2026.2.25
