@@ -137,7 +137,7 @@ st.markdown("""
 
 def call_api(endpoint: str, payload: dict) -> dict:
     try:
-        r = requests.post(f"{API_BASE}{endpoint}", json=payload, timeout=10)
+        r = requests.post(f"{API_BASE}{endpoint}", json=payload, timeout=30)
         r.raise_for_status()
         return r.json()
     except requests.exceptions.ConnectionError:

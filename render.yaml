@@ -6,8 +6,8 @@ services:
     name: phishing-api
     runtime: docker
     dockerfilePath: ./Dockerfile
-    # Overriding the start CMD to bind to Render's dynamic $PORT
-    dockerCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT --workers 2"
+    # Overriding the start CMD to bind to Render's dynamic $PORT with only 1 worker to save RAM
+    dockerCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT"
     plan: free # Adjust if memory limits are hit (Free tier gives 512MB RAM)
     healthCheckPath: /health
 
