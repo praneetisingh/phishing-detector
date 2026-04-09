@@ -13,6 +13,7 @@ Features:
 Run: streamlit run app/streamlit_app.py
 """
 
+import os
 import time
 import requests
 import pandas as pd
@@ -25,7 +26,7 @@ from datetime import datetime
 # ──────────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────────
-API_BASE = "https://phishing-detector-r1o9.onrender.com"
+API_BASE = os.getenv("API_BASE", "https://phishing-detector-r1o9.onrender.com")
 PAGE_TITLE = "PhishShield — AI Email Security"
 
 st.set_page_config(
@@ -41,44 +42,90 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .main { background-color: #0e1117; }
-    .block-container { padding: 1.5rem 2rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+    html, body, [class*="css"]  {
+        font-family: 'Inter', sans-serif !important;
+    }
+    .main { 
+        background-color: #0e1117; 
+        background-image: radial-gradient(circle at 15% 50%, rgba(0, 204, 119, 0.05), transparent 25%),
+                          radial-gradient(circle at 85% 30%, rgba(255, 75, 75, 0.05), transparent 25%);
+    }
+    .block-container { padding: 2rem; max-width: 1200px; }
+
+    @keyframes slideUpFade {
+        0% { opacity: 0; transform: translateY(15px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
 
     .verdict-phishing {
-        background: linear-gradient(135deg, #ff4b4b22, #ff4b4b44);
-        border-left: 4px solid #ff4b4b;
-        border-radius: 8px;
-        padding: 1.2rem;
-        margin: 1rem 0;
+        background: rgba(255, 75, 75, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 75, 75, 0.2);
+        border-left: 5px solid #ff4b4b;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        box-shadow: 0 10px 30px -10px rgba(255, 75, 75, 0.15);
     }
     .verdict-legit {
-        background: linear-gradient(135deg, #00cc7722, #00cc7744);
-        border-left: 4px solid #00cc77;
-        border-radius: 8px;
-        padding: 1.2rem;
-        margin: 1rem 0;
+        background: rgba(0, 204, 119, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 204, 119, 0.2);
+        border-left: 5px solid #00cc77;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        box-shadow: 0 10px 30px -10px rgba(0, 204, 119, 0.15);
     }
     .metric-card {
-        background: #1e2130;
-        border-radius: 10px;
-        padding: 1rem;
+        background: rgba(30, 33, 48, 0.5);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 1.2rem;
         text-align: center;
-        border: 1px solid #2d3250;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .risk-badge-CRITICAL { color: #ff2424; font-weight: bold; font-size: 1.2rem; }
-    .risk-badge-HIGH     { color: #ff7b2c; font-weight: bold; font-size: 1.2rem; }
-    .risk-badge-MEDIUM   { color: #ffc107; font-weight: bold; font-size: 1.2rem; }
-    .risk-badge-LOW      { color: #7ecdf0; font-weight: bold; font-size: 1.2rem; }
-    .risk-badge-SAFE     { color: #00cc77; font-weight: bold; font-size: 1.2rem; }
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255,255,255,0.05);
+    }
+    .risk-badge-CRITICAL { color: #ff2424; font-weight: 700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,36,36,0.3); }
+    .risk-badge-HIGH     { color: #ff7b2c; font-weight: 700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,123,44,0.3); }
+    .risk-badge-MEDIUM   { color: #ffc107; font-weight: 700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,193,7,0.3); }
+    .risk-badge-LOW      { color: #7ecdf0; font-weight: 700; font-size: 1.2rem; }
+    .risk-badge-SAFE     { color: #00cc77; font-weight: 700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(0,204,119,0.3); }
     .rule-tag {
         display: inline-block;
-        background: #ff4b4b22;
-        border: 1px solid #ff4b4b55;
-        border-radius: 12px;
-        padding: 2px 10px;
+        background: rgba(255, 75, 75, 0.1);
+        border: 1px solid rgba(255, 75, 75, 0.3);
+        border-radius: 20px;
+        padding: 4px 12px;
         font-size: 0.8rem;
-        margin: 2px;
+        font-weight: 600;
+        margin: 4px 4px 4px 0;
         color: #ff9999;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    /* Streamlit widget tweaks */
+    div[data-testid="stMetricValue"] {
+        font-size: 2.2rem !important;
+        font-weight: 700 !important;
+    }
+    button[kind="primary"] {
+        background: linear-gradient(135deg, #00cc77, #009955) !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+        color: white !important;
+    }
+    button[kind="primary"]:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0, 204, 119, 0.3) !important;
     }
 </style>
 """, unsafe_allow_html=True)

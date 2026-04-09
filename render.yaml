@@ -1,0 +1,30 @@
+services:
+  # ---------------------------------------------------------
+  # 1. The Backend API Service (FastAPI)
+  # ---------------------------------------------------------
+  - type: web
+    name: phishing-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    # Overriding the start CMD to bind to Render's dynamic $PORT
+    dockerCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT --workers 2"
+    plan: free # Adjust if memory limits are hit (Free tier gives 512MB RAM)
+    healthCheckPath: /health
+
+  # ---------------------------------------------------------
+  # 2. The Frontend Client Service (Streamlit)
+  # ---------------------------------------------------------
+  - type: web
+    name: phishing-frontend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    # Starts the Streamlit application and binds it to Render's dynamic $PORT
+    dockerCommand: "streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0"
+    plan: free
+    envVars:
+      # Automatically links the frontend to the deployed backend url!
+      - key: API_BASE
+        fromService:
+          name: phishing-api
+          type: web
+          property: url
