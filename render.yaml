@@ -4,7 +4,7 @@ services:
   # ---------------------------------------------------------
   - type: web
     name: phishing-api
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     # Overriding the start CMD to bind to Render's dynamic $PORT
     dockerCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT --workers 2"
@@ -16,7 +16,7 @@ services:
   # ---------------------------------------------------------
   - type: web
     name: phishing-frontend
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     # Starts the Streamlit application and binds it to Render's dynamic $PORT
     dockerCommand: "streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0"
@@ -27,4 +27,4 @@ services:
         fromService:
           name: phishing-api
           type: web
-          property: url
+          envVarKey: RENDER_EXTERNAL_URL
