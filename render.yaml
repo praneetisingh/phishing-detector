@@ -6,8 +6,8 @@ services:
     name: phishing-api
     runtime: docker
     dockerfilePath: ./Dockerfile
-    # Overriding the start CMD to bind to Render's dynamic $PORT with only 1 worker to save RAM
-    dockerCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+    # Overriding the start CMD to bind to Render's dynamic $PORT properly via shell
+    dockerCommand: "bash -c 'uvicorn api.main:app --host 0.0.0.0 --port $PORT'"
     plan: free # Adjust if memory limits are hit (Free tier gives 512MB RAM)
     healthCheckPath: /health
 
@@ -18,8 +18,8 @@ services:
     name: phishing-frontend
     runtime: docker
     dockerfilePath: ./Dockerfile
-    # Starts the Streamlit application and binds it to Render's dynamic $PORT
-    dockerCommand: "streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0"
+    # Starts the Streamlit application and binds it to Render's dynamic $PORT safely via shell
+    dockerCommand: "bash -c 'streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0'"
     plan: free
     envVars:
       # Automatically links the frontend to the deployed backend url!
