@@ -196,10 +196,10 @@ def render_confidence_gauge(score: float, label: int) -> go.Figure:
             "bgcolor": "#1e2130",
             "borderwidth": 0,
             "steps": [
-                {"range": [0, 30],  "color": "#00cc7720"},
-                {"range": [30, 50], "color": "#ffc10720"},
-                {"range": [50, 75], "color": "#ff7b2c20"},
-                {"range": [75, 100], "color": "#ff4b4b20"},
+                {"range": [0, 30],  "color": "rgba(0, 204, 119, 0.2)"},
+                {"range": [30, 50], "color": "rgba(255, 193, 7, 0.2)"},
+                {"range": [50, 75], "color": "rgba(255, 123, 44, 0.2)"},
+                {"range": [75, 100], "color": "rgba(255, 75, 75, 0.2)"},
             ],
             "threshold": {
                 "line": {"color": "white", "width": 2},
