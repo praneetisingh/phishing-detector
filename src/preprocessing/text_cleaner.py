@@ -307,9 +307,9 @@ class RuleEngine:
 
     RULES = [
         # (name, pattern_or_fn, weight, description)
-        ("urgent_keywords", URGENCY_KEYWORDS, 0.25, "Urgency manipulation language"),
-        ("financial_lure", FINANCIAL_LURE_KEYWORDS, 0.20, "Financial enticement"),
-        ("credential_harvest", CREDENTIAL_HARVEST_KEYWORDS, 0.20, "Credential harvesting language"),
+        ("urgent_keywords", URGENCY_KEYWORDS, 0.35, "Urgency manipulation language"),
+        ("financial_lure", FINANCIAL_LURE_KEYWORDS, 0.35, "Financial enticement"),
+        ("credential_harvest", CREDENTIAL_HARVEST_KEYWORDS, 0.35, "Credential harvesting language"),
     ]
 
     def evaluate(self, text: str) -> Dict:
@@ -327,10 +327,11 @@ class RuleEngine:
         explanations = []
 
         for name, keyword_set, weight, description in self.RULES:
-            matched = [kw for kw in keyword_set if kw in text_lower]
+            matched = list(set([kw for kw in keyword_set if kw in text_lower])) # unique matches
             if matched:
-                # Diminishing returns for many hits in same category
-                category_score = weight * min(len(matched), 3) / 3
+                # Diminishing returns but much more sensitive (1 match = 50%, 2+ matches = 100% of weight)
+                multiplier = 0.5 if len(matched) == 1 else 1.0
+                category_score = weight * multiplier
                 total_score += category_score
                 triggered.append(name)
                 explanations.append(
